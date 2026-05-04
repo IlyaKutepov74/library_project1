@@ -78,6 +78,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from alembic import context
 
 from app.core.db import Base
+from app.models.author import Author
 from app.models.user import User
 
 load_dotenv('.env')
