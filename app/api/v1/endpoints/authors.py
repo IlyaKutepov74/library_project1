@@ -32,7 +32,7 @@ def author_or_404(author: Author | None) -> Author:
 async def create_author(
     author_data: AuthorCreate,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> Author:
     """
     Создает автора.
     """
@@ -55,7 +55,7 @@ async def get_authors(
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     session: AsyncSession = Depends(get_async_session),
-):
+) -> list[Author]:
     """
     Возвращает список авторов.
     """
@@ -68,7 +68,7 @@ async def get_authors(
 
     result = await session.execute(statement)
 
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 # Получить автора по айди
@@ -79,7 +79,7 @@ async def get_authors(
 async def get_author(
     author_id: int,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> Author:
     """
     Возвращает автора по идентификатору (id).
     """
@@ -97,7 +97,7 @@ async def update_author(
     author_id: int,
     author_data: AuthorUpdate,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> Author:
     """
     Обновляет информацию об авторе.
     """
@@ -123,7 +123,7 @@ async def update_author(
 async def delete_author(
     author_id: int,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> None:
     """
     Удаляет автора по идентификатору (id).
     """
