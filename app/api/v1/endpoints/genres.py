@@ -6,7 +6,7 @@ from app.core.db import get_async_session
 from app.models.genre import Genre
 from app.schemas.genre import GenreCreate, GenreRead
 
-router = APIRouter(prefix="/genres", tags=["Genres"])
+router = APIRouter(prefix='/genres', tags=['Genres'])
 
 
 async def get_genre_or_404(
@@ -18,16 +18,16 @@ async def get_genre_or_404(
     if genre is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Genre not found",
+            detail='Genre not found',
         )
     return genre
 
 
 @router.get(
-    "/",
+    '/',
     response_model=list[GenreRead],
-    summary="Список жанров",
-    description="Возвращает все жанры из базы данных.",
+    summary='Список жанров',
+    description='Возвращает все жанры из базы данных.',
 )
 async def get_genres(
     session: AsyncSession = Depends(get_async_session),
@@ -38,10 +38,10 @@ async def get_genres(
 
 
 @router.get(
-    "/{genre_id}",
+    '/{genre_id}',
     response_model=GenreRead,
-    summary="Получить жанр",
-    description="Возвращает жанр по его ID.",
+    summary='Получить жанр',
+    description='Возвращает жанр по его ID.',
 )
 async def get_genre(
     genre_id: int,
@@ -52,24 +52,22 @@ async def get_genre(
 
 
 @router.post(
-    "/",
+    '/',
     response_model=GenreRead,
     status_code=status.HTTP_201_CREATED,
-    summary="Создать жанр",
-    description="Создаёт новый жанр. Имя должно быть уникальным.",
+    summary='Создать жанр',
+    description='Создаёт новый жанр. Имя должно быть уникальным.',
 )
 async def create_genre(
     data: GenreCreate,
     session: AsyncSession = Depends(get_async_session),
 ) -> GenreRead:
     """Создать новый жанр с проверкой уникальности имени."""
-    existing = await session.execute(
-        select(Genre).where(Genre.name == data.name)
-    )
+    existing = await session.execute(select(Genre).where(Genre.name == data.name))
     if existing.scalar_one_or_none() is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Genre with this name already exists",
+            detail='Genre with this name already exists',
         )
     genre = Genre(**data.model_dump())
     session.add(genre)
@@ -79,10 +77,10 @@ async def create_genre(
 
 
 @router.delete(
-    "/{genre_id}",
+    '/{genre_id}',
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Удалить жанр",
-    description="Удаляет жанр по ID.",
+    summary='Удалить жанр',
+    description='Удаляет жанр по ID.',
 )
 async def delete_genre(
     genre_id: int,

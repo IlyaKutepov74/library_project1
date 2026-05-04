@@ -6,7 +6,7 @@ from app.core.db import get_async_session
 from app.models.category import Category
 from app.schemas.category import CategoryCreate, CategoryRead
 
-router = APIRouter(prefix="/categories", tags=["Categories"])
+router = APIRouter(prefix='/categories', tags=['Categories'])
 
 
 async def get_category_or_404(
@@ -18,16 +18,16 @@ async def get_category_or_404(
     if category is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Category not found",
+            detail='Category not found',
         )
     return category
 
 
 @router.get(
-    "/",
+    '/',
     response_model=list[CategoryRead],
-    summary="Список категорий",
-    description="Возвращает все категории из базы данных.",
+    summary='Список категорий',
+    description='Возвращает все категории из базы данных.',
 )
 async def get_categories(
     session: AsyncSession = Depends(get_async_session),
@@ -38,10 +38,10 @@ async def get_categories(
 
 
 @router.get(
-    "/{category_id}",
+    '/{category_id}',
     response_model=CategoryRead,
-    summary="Получить категорию",
-    description="Возвращает категорию по её ID.",
+    summary='Получить категорию',
+    description='Возвращает категорию по её ID.',
 )
 async def get_category(
     category_id: int,
@@ -52,24 +52,22 @@ async def get_category(
 
 
 @router.post(
-    "/",
+    '/',
     response_model=CategoryRead,
     status_code=status.HTTP_201_CREATED,
-    summary="Создать категорию",
-    description="Создаёт новую категорию. Имя должно быть уникальным.",
+    summary='Создать категорию',
+    description='Создаёт новую категорию. Имя должно быть уникальным.',
 )
 async def create_category(
     data: CategoryCreate,
     session: AsyncSession = Depends(get_async_session),
 ) -> CategoryRead:
     """Создать новую категорию с проверкой уникальности имени."""
-    existing = await session.execute(
-        select(Category).where(Category.name == data.name)
-    )
+    existing = await session.execute(select(Category).where(Category.name == data.name))
     if existing.scalar_one_or_none() is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Category with this name already exists",
+            detail='Category with this name already exists',
         )
     category = Category(**data.model_dump())
     session.add(category)
@@ -79,10 +77,10 @@ async def create_category(
 
 
 @router.delete(
-    "/{category_id}",
+    '/{category_id}',
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Удалить категорию",
-    description="Удаляет категорию по ID.",
+    summary='Удалить категорию',
+    description='Удаляет категорию по ID.',
 )
 async def delete_category(
     category_id: int,
