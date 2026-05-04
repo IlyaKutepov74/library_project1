@@ -3,6 +3,16 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
+def validate_author_birth_year(value: int | None) -> int | None:
+    """
+    Валидация года рождения
+    """
+    if value is not None and value > date.today().year:
+        raise ValueError('Год рождения не может быть в будущем')
+
+    return value
+
+
 class AuthorBase(BaseModel):
     full_name: str = Field(
         ...,
@@ -32,18 +42,14 @@ class AuthorBase(BaseModel):
         value = value.strip()
         if not value:
             raise ValueError('ФИО автора не может быть пустым')
+        if len(value) < 2:
+            raise ValueError('ФИО автора должно содержать минимум 2 символа')
         return value
 
     @field_validator('birth_year')
     @classmethod
     def validate_birth_year(cls, value: int | None) -> int | None:
-        """
-        Валидация года рождения
-        """
-        if value is not None and value > date.today().year:
-            raise ValueError('Год рождения не может быть в будущем')
-
-        return value
+        return validate_author_birth_year(value)
 
 
 class AuthorCreate(AuthorBase):
@@ -79,18 +85,14 @@ class AuthorUpdate(BaseModel):
         value = value.strip()
         if not value:
             raise ValueError('ФИО автора не может быть пустым')
+        if len(value) < 2:
+            raise ValueError('ФИО автора должно содержать минимум 2 символа')
         return value
 
     @field_validator('birth_year')
     @classmethod
     def validate_birth_year(cls, value: int | None) -> int | None:
-        """
-        Валидация года рождения
-        """
-        if value is not None and value > date.today().year:
-            raise ValueError('Год рождения не может быть в будущем')
-
-        return value
+        return validate_author_birth_year(value)
 
 
 class AuthorRead(BaseModel):
