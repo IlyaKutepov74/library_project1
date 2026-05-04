@@ -9,6 +9,16 @@ from app.schemas.author import AuthorCreate, AuthorRead, AuthorUpdate
 router = APIRouter()
 
 
+def author_or_404(author: Author | None) -> Author:
+    if author is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Автор не найден',
+        )
+
+    return author
+
+
 # Создать автора
 @router.post(
     '',
@@ -62,13 +72,7 @@ async def get_author(
 ):
     author = await session.get(Author, author_id)
 
-    if author is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Автор не найден',
-        )
-
-    return author
+    return author_or_404(author)
 
 
 # Обновить информацию у автора
@@ -82,12 +86,7 @@ async def update_author(
     session: AsyncSession = Depends(get_async_session),
 ):
     author = await session.get(Author, author_id)
-
-    if author is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Автор не найден',
-        )
+    author = author_or_404(author)
 
     update_data = author_data.model_dump(exclude_unset=True)
 
@@ -110,12 +109,7 @@ async def delete_author(
     session: AsyncSession = Depends(get_async_session),
 ):
     author = await session.get(Author, author_id)
-
-    if author is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Автор не найден',
-        )
+    author = author_or_404(author)
 
     await session.delete(author)
     await session.commit()
