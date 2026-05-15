@@ -1,5 +1,4 @@
 from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,17 +13,23 @@ class Settings(BaseSettings):
     def database_url(self) -> str:
         return f'postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}'
 
+    #  Общие 
     title: str = 'Library API'
-    secret_key: str = 'your-secret-key-here'   # ← переименовано из secret
-    first_superuser_email: str | None = 'FIRST_SUPERUSER_EMAIL'
-    first_superuser_password: str | None = 'FIRST_SUPERUSER_PASSWORD'
-    google_books_api_url: str | None = 'GOOGLE_BOOKS_API_URL'
-    google_books_api_key: str | None = 'GOOGLE_BOOKS_API_KEY'
 
-    # JWT‑настройки
+    secret_key: str
+
     algorithm: str = 'HS256'
+
     access_token_expire_minutes: int = 30
 
+    first_superuser_email: str | None = None
+    first_superuser_password: str | None = None
+
+    #  Внешние API 
+    google_books_api_url: str | None = None
+    google_books_api_key: str | None = None
+
+    # Ollama 
     ollama_base_url: str = 'http://ollama:11434'
     ollama_model: str = 'qwen2.5:3b'
     ollama_timeout: float = 60.0
